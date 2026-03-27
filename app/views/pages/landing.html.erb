@@ -1,0 +1,18 @@
+<%= content_for :title, "Syncope" %>
+
+<div class="landing">
+  <div class="landing-background"></div>
+  
+  <div class="landing-content fade-in-up">
+    <div class="landing-wordmark"><span class="wm-a">Syn</span><span class="wm-b">cope</span></div>
+    <p class="landing-tagline">Your websites. Always watched.</p>
+    
+    <%= link_to dashboard_path, class: "landing-enter" do %>
+      <span class="enter-text">Enter</span>
+      <svg class="enter-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="4" y1="16" x2="16" y2="4"/>
+        <polyline points="7,4 16,4 16,13"/>
+      </svg>
+    <% end %>
+  </div>
+</div>
