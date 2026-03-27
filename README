@@ -1,0 +1,10 @@
+Syncope
+=======
+
+In medicine, syncope is the sudden, temporary loss of consciousness - a "fainting" episode. In software, **Syncope** watches over your websites so they never faint unnoticed.
+
+Syncope is an open-source, self-hosted uptime monitoring tool built with Ruby on Rails 8. It periodically checks whether your websites and services are alive, measures their response time, and alerts you the moment something goes wrong. It uses HTTP HEAD requests for bandwidth efficiency, enforces strict timeouts so your app never hangs on a dead server, and tracks millisecond-accurate latency via a monotonic clock.
+
+The goal is a tool that is simple to self-host, transparent in how it works, and reliable enough to trust with your production infrastructure. No accounts, no subscriptions, no black boxes - just a clean Rails app you own entirely.
+
+Built on the modern Rails stack: Hotwire for a reactive UI without the weight of a JavaScript framework, Solid Queue for background job scheduling, and SQLite for zero-config persistence.
