@@ -1,0 +1,23 @@
+<%= content_for :title, "Dashboard — Syncope" %>
+
+<div class="dashboard">
+  <header class="dashboard-header">
+    <div class="header-content">
+      <span class="dashboard-wordmark">Syncope</span>
+      <%= link_to "Add Site", new_site_path, class: "btn-add" %>
+    </div>
+  </header>
+
+  <main class="dashboard-main">
+    <% if @sites.any? %>
+      <div class="sites-grid">
+        <%= render @sites %>
+      </div>
+    <% else %>
+      <div class="empty-state">
+        <p class="dashboard-empty">No sites monitored yet. Add one to get started.</p>
+        <%= link_to "Add Site", new_site_path, class: "btn-add-large" %>
+      </div>
+    <% end %>
+  </main>
+</div>

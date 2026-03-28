@@ -1,0 +1,13 @@
+one:
+  site: kernel
+  status: 200
+  duration_ms: 143
+  error:
+  checked_at: <%= Time.current %>
+
+two:
+  site: my_blog
+  status: 0
+  duration_ms:
+  error: "Connection Timed Out"
+  checked_at: <%= Time.current %>

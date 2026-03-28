@@ -1,0 +1,7 @@
+kernel:
+  name: Kernel.org
+  url: https://kernel.org
+
+my_blog:
+  name: My Blog
+  url: https://example.com

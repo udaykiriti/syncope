@@ -1,0 +1,32 @@
+<div class="site-card" id="<%= dom_id site %>">
+  <div class="site-card-header">
+    <div class="status-indicator status-<%= site.status_color %>"></div>
+    <h3 class="site-name"><%= site.name %></h3>
+    <span class="site-status-label status-<%= site.status_color %>"><%= site.status_label %></span>
+  </div>
+  
+  <div class="site-url">
+    <%= link_to site.url, site.url, target: "_blank", rel: "noopener" %>
+  </div>
+
+  <div class="site-meta">
+    <% if site.latest_check %>
+      <div class="meta-item">
+        <span class="meta-label">Latency</span>
+        <span class="meta-value"><%= site.latest_check.duration_ms || "—" %> ms</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Last Check</span>
+        <span class="meta-value text-muted"><%= time_ago_in_words(site.latest_check.checked_at) %> ago</span>
+      </div>
+    <% else %>
+       <div class="meta-item">
+        <span class="meta-value text-muted">Waiting for first check...</span>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="site-actions">
+    <%= button_to "Remove", site_path(site), method: :delete, data: { turbo_confirm: "Are you sure?" }, class: "btn-delete" %>
+  </div>
+</div>
