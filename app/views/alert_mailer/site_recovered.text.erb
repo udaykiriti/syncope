@@ -1,0 +1,18 @@
+Syncope Alert — <%= @site.name %> has recovered
+================================================
+
+Good news — your site is back online.
+
+Site:          <%= @site.name %>
+URL:           <%= @site.url %>
+Status:        UP
+HTTP Code:     <%= @check.status %>
+<% if @check.duration_ms.present? %>
+Response time: <%= @check.duration_ms %> ms
+<% end %>
+Recovered at:  <%= @check.checked_at.strftime("%d %b %Y, %H:%M UTC") %>
+
+Open the dashboard: <%= sites_url %>
+
+---
+You are receiving this alert because you configured Syncope to monitor <%= @site.url %>.

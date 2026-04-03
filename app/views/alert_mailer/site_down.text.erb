@@ -1,0 +1,18 @@
+Syncope Alert — <%= @site.name %> is DOWN
+==========================================
+
+Your site is currently unreachable.
+
+Site:        <%= @site.name %>
+URL:         <%= @site.url %>
+Status:      DOWN
+HTTP Code:   <%= @check.status.zero? ? "—" : @check.status %>
+<% if @check.error.present? %>
+Error:       <%= @check.error %>
+<% end %>
+Detected at: <%= @check.checked_at.strftime("%d %b %Y, %H:%M UTC") %>
+
+Open the dashboard: <%= sites_url %>
+
+---
+You are receiving this alert because you configured Syncope to monitor <%= @site.url %>.

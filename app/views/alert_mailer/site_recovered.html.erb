@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= @site.name %> recovered — Syncope</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #0a0a0f; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #e8e8f0;">
+  <div style="max-width: 560px; margin: 40px auto; background: #111118; border: 1px solid rgba(255,255,255,0.07); border-radius: 4px; overflow: hidden;">
+    <div style="padding: 28px 32px 24px; border-bottom: 3px solid #22c55e;">
+      <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #6b6b80; margin-bottom: 12px;">Syncope</div>
+      <h1 style="font-size: 22px; font-weight: 700; color: #4ade80; margin: 0;">✓ Site has recovered</h1>
+    </div>
+
+    <div style="padding: 28px 32px;">
+      <div style="background: #0a0a0f; border: 1px solid rgba(255,255,255,0.07); border-radius: 4px; padding: 18px 20px; margin-bottom: 24px;">
+        <p style="font-size: 17px; font-weight: 600; margin: 0 0 6px;"><%= @site.name %></p>
+        <p style="font-size: 13px; color: #6b6b80; margin: 0; word-break: break-all;"><%= @site.url %></p>
+      </div>
+
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
+        <tr>
+          <td style="padding: 8px 0; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #6b6b80; width: 120px;">Status</td>
+          <td style="padding: 8px 0; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.05); font-weight: 500;"><span style="display: inline-block; background: rgba(34,197,94,0.12); color: #4ade80; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 10px; border-radius: 4px;">UP</span></td>
+        </tr>
+        <tr>
+          <td style="padding: 8px 0; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #6b6b80; width: 120px;">HTTP Code</td>
+          <td style="padding: 8px 0; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.05); font-weight: 500;"><%= @check.status %></td>
+        </tr>
+        <% if @check.duration_ms.present? %>
+        <tr>
+          <td style="padding: 8px 0; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #6b6b80; width: 120px;">Response time</td>
+          <td style="padding: 8px 0; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.05); font-weight: 500;"><%= @check.duration_ms %> ms</td>
+        </tr>
+        <% end %>
+        <tr>
+          <td style="padding: 8px 0; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #6b6b80; width: 120px;">Recovered at</td>
+          <td style="padding: 8px 0; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.05); font-weight: 500;"><%= @check.checked_at.strftime("%d %b %Y, %H:%M UTC") %></td>
+        </tr>
+      </table>
+
+      <%= link_to "Open Dashboard →", sites_url, style: "display: inline-block; background: #6c63ff; color: #fff; font-size: 13px; font-weight: 600; text-decoration: none; padding: 12px 24px; border-radius: 4px;" %>
+    </div>
+
+    <div style="padding: 20px 32px; border-top: 1px solid rgba(255,255,255,0.05); font-size: 11px; color: #6b6b80;">
+      You are receiving this alert because you configured Syncope to monitor <strong><%= @site.url %></strong>.
+    </div>
+  </div>
+</body>
+</html>

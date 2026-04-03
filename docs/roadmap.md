@@ -6,7 +6,7 @@ Syncope is built in phases. Each phase produces a working, useful increment of t
 
 ## Phase 1 — The Engine
 
-**Status: In progress**
+**Status: Complete**
 
 Build the core HTTP pinger as a standalone Ruby service class. This is the fundamental piece everything else depends on. No Rails, no database, no UI — just a class that takes a URL and tells you if it is alive.
 
@@ -20,7 +20,7 @@ Deliverables:
 
 ## Phase 2 — Database Models
 
-**Status: Planned**
+**Status: Complete**
 
 Define the data schema. Two models:
 
@@ -55,7 +55,7 @@ Deliverables:
 
 ## Phase 3 — Real Dashboard
 
-**Status: Planned**
+**Status: Complete**
 
 Replace the placeholder dashboard with a live view of all monitored sites. Each site shows:
 - Current status (up / down)
@@ -74,7 +74,7 @@ Deliverables:
 
 ## Phase 4 — Background Ping Scheduler
 
-**Status: Planned**
+**Status: Complete**
 
 A Solid Queue recurring job that automatically pings all sites on a schedule without any manual intervention.
 
@@ -88,7 +88,7 @@ Deliverables:
 
 ## Phase 5 — Alerting
 
-**Status: Planned**
+**Status: In progress**
 
 Notify the user when a site transitions from up to down, and when it recovers.
 
