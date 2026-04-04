@@ -10,7 +10,7 @@ class AlertMailer < ApplicationMailer
     @site  = site
     @check = check
     mail(
-      to:      ENV["ALERT_EMAIL_TO"],
+      to:      @site.alert_email.presence || ENV["ALERT_EMAIL_TO"],
       subject: "[Syncope] #{@site.name} is DOWN"
     )
   end
@@ -20,7 +20,7 @@ class AlertMailer < ApplicationMailer
     @site  = site
     @check = check
     mail(
-      to:      ENV["ALERT_EMAIL_TO"],
+      to:      @site.alert_email.presence || ENV["ALERT_EMAIL_TO"],
       subject: "[Syncope] #{@site.name} has recovered"
     )
   end

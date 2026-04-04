@@ -1,32 +1,64 @@
+<%= link_to site_path(site), class: "site-card-link", data: { turbo_frame: "_top" } do %>
 <div class="site-card" id="<%= dom_id site %>">
-  <div class="site-card-header">
-    <div class="status-indicator status-<%= site.status_color %>"></div>
-    <h3 class="site-name"><%= site.name %></h3>
-    <span class="site-status-label status-<%= site.status_color %>"><%= site.status_label %></span>
-  </div>
-  
-  <div class="site-url">
-    <%= link_to site.url, site.url, target: "_blank", rel: "noopener" %>
-  </div>
+  <div class="card-stripe card-stripe--<%= site.status_color %>"></div>
 
-  <div class="site-meta">
-    <% if site.latest_check %>
-      <div class="meta-item">
-        <span class="meta-label">Latency</span>
-        <span class="meta-value"><%= site.latest_check.duration_ms || "—" %> ms</span>
-      </div>
-      <div class="meta-item">
-        <span class="meta-label">Last Check</span>
-        <span class="meta-value text-muted"><%= time_ago_in_words(site.latest_check.checked_at) %> ago</span>
-      </div>
-    <% else %>
-       <div class="meta-item">
-        <span class="meta-value text-muted">Waiting for first check...</span>
+  <div class="card-body">
+    <div class="site-card-header">
+      <div class="status-indicator status-<%= site.status_color %>"></div>
+      <h3 class="site-name"><%= site.name %></h3>
+      <% if site.latest_check %>
+        <span class="http-code <%= http_code_class(site.latest_check.status) %>"><%= site.latest_check.status %></span>
+      <% end %>
+      <span class="site-status-label status-<%= site.status_color %>"><%= site.status_label %></span>
+    </div>
+
+    <div class="site-url-text">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      <span><%= truncate(site.url.sub(/\Ahttps?:\/\//, ''), length: 38) %></span>
+    </div>
+
+    <%# Mini sparkline showing last 12 checks %>
+    <% recent = site.checks.order(checked_at: :desc).limit(12).reverse %>
+    <% if recent.any? %>
+      <div class="sparkline-container">
+        <span class="sparkline-label">Last <%= recent.size %> checks</span>
+        <div class="sparkline">
+          <%= sparkline_bars(recent, max_bars: 12) %>
+        </div>
       </div>
     <% end %>
+
+    <div class="site-meta">
+      <% if site.latest_check %>
+        <div class="meta-item <%= latency_class(site.latest_check.duration_ms) %>">
+          <span class="meta-label">RTT</span>
+          <span class="meta-value"><%= site.latest_check.duration_ms || "—" %><small>ms</small></span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Uptime</span>
+          <span class="meta-value"><%= site.uptime_percentage || "—" %><small>%</small></span>
+        </div>
+      <% else %>
+        <div class="meta-item" style="grid-column: 1 / -1; text-align: center;">
+          <span class="text-muted">awaiting_ping...</span>
+        </div>
+      <% end %>
+    </div>
   </div>
 
-  <div class="site-actions">
-    <%= button_to "Remove", site_path(site), method: :delete, data: { turbo_confirm: "Are you sure?" }, class: "btn-delete" %>
+  <div class="card-footer">
+    <div class="card-timestamp">
+      <span class="cursor-blink"></span>
+      <% if site.latest_check %>
+        <%= site.latest_check.checked_at.strftime("%H:%M:%S") %>
+        <span class="time-ago">(<%= time_ago_in_words(site.latest_check.checked_at) %>)</span>
+      <% else %>
+        --:--:--
+      <% end %>
+    </div>
+    <div style="display:flex;align-items:center;gap:0.5rem;">
+      <span class="card-click-hint">VIEW →</span>
+    </div>
   </div>
 </div>
+<% end %>

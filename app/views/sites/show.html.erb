@@ -1,0 +1,142 @@
+<%= content_for :title, "#{@site.name} — Syncope" %>
+
+<div class="dashboard">
+  <header class="dashboard-header">
+    <div class="header-content">
+      <span class="dashboard-wordmark">
+        <span class="wordmark-icon">
+          <svg viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        </span>
+        Syncope
+      </span>
+      <%= link_to sites_path, class: "btn-add" do %>
+        ← Dashboard<span class="kbd">ESC</span>
+      <% end %>
+    </div>
+  </header>
+
+  <main class="dashboard-main">
+    <%# ── Site Header ── %>
+    <div class="detail-header">
+      <div class="detail-status">
+        <div class="status-indicator status-<%= @site.status_color %>" style="width:14px;height:14px;"></div>
+        <h1 class="detail-name"><%= @site.name %></h1>
+        <span class="site-status-label status-<%= @site.status_color %>"><%= @site.status_label %></span>
+        <% if @site.latest_check %>
+          <span class="http-code <%= http_code_class(@site.latest_check.status) %>"><%= @site.latest_check.status %></span>
+        <% end %>
+      </div>
+      <div class="detail-url">
+        <%= link_to @site.url, @site.url, target: "_blank", rel: "noopener" %>
+      </div>
+    <div class="detail-actions">
+        <%= link_to edit_site_path(@site), class: "btn-ping" do %>
+          EDIT<span class="kbd">E</span>
+        <% end %>
+        <%= button_to ping_site_path(@site), method: :post, class: "btn-ping" do %>
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          Ping Now
+        <% end %>
+      </div>
+    </div>
+
+    <%# ── Settings & Config ── %>
+    <div class="section-header">[ Configuration ]</div>
+    <div class="stats-grid" style="margin-bottom:2.5rem;">
+      <div class="stat-card">
+        <span class="stat-label">// Interval</span>
+        <span class="stat-value"><%= @site.check_interval_seconds %><small style="font-size:0.8rem;">s</small></span>
+      </div>
+      <div class="stat-card" style="grid-column: span 2;">
+        <span class="stat-label">// Alert Recipient</span>
+        <span class="stat-value" style="font-size: 1.25rem;"><%= @site.alert_email.presence || "Global Default" %></span>
+      </div>
+    </div>
+
+    <%# ── Stats Row ── %>
+    <div class="section-header">[ Metrics ]</div>
+    <div class="stats-grid" style="margin-bottom:2.5rem;">
+      <div class="stat-card stat-card--healthy">
+        <span class="stat-label">// Uptime</span>
+        <span class="stat-value"><%= @site.uptime_percentage || "—" %><small style="font-size:0.8rem;">%</small></span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">// Avg RTT</span>
+        <% avg = @checks.any? ? (@checks.map(&:duration_ms).compact.sum.to_f / @checks.map(&:duration_ms).compact.size).round : nil %>
+        <span class="stat-value"><%= avg || "—" %><small style="font-size:0.8rem;">ms</small></span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">// Total Checks</span>
+        <span class="stat-value"><%= @site.checks.count %></span>
+      </div>
+    </div>
+
+    <%# ── Response Time Chart ── %>
+    <div class="section-header">[ Response Time — Last 20 ]</div>
+    <div class="chart-container">
+      <div class="chart-bars">
+        <% max_ms = [@recent_checks.map { |c| c.duration_ms || 0 }.max || 1, 1].max.to_f %>
+        <% @recent_checks.each do |check| %>
+          <% ms = check.duration_ms || 0 %>
+          <% height = [(ms / max_ms * 100).round, 2].max %>
+          <% bar_color = case latency_class(ms)
+               when "latency-fast" then "var(--green)"
+               when "latency-warn" then "var(--amber)"
+               when "latency-slow" then "var(--red)"
+               else "var(--text-3)"
+             end %>
+          <div class="chart-bar-wrapper" title="<%= ms %>ms — <%= check.checked_at.strftime('%H:%M:%S') %>">
+            <div class="chart-bar" style="height:<%= height %>%;background:<%= bar_color %>"></div>
+            <span class="chart-bar-label"><%= check.checked_at.strftime('%H:%M') %></span>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <%# ── Check History Table ── %>
+    <div class="section-header">[ Check Log ]</div>
+    <div class="history-table-wrap">
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Status</th>
+            <th>RTT</th>
+            <th>Error</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @checks.each do |check| %>
+            <tr>
+              <td><%= check.checked_at.strftime("%Y-%m-%d %H:%M:%S") %></td>
+              <td>
+                <span class="http-code <%= http_code_class(check.status) %>"><%= check.status %></span>
+              </td>
+              <td class="<%= latency_class(check.duration_ms) %>">
+                <span class="meta-value" style="font-size:0.8rem;"><%= check.duration_ms || "—" %><small>ms</small></span>
+              </td>
+              <td class="text-muted"><%= check.error || "—" %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <%# ── Status Badge Embed ── %>
+    <div class="section-header">[ Status Badge ]</div>
+    <div class="badge-section">
+      <p class="badge-desc">Embed this URL to show live status:</p>
+      <div class="badge-code">
+        <code><%= status_badge_url(@site) %></code>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+document.addEventListener('keydown', function(e) {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if (e.key === 'Escape') window.location.href = '<%= sites_path %>';
+  if (e.key === 'e' || e.key === 'E') window.location.href = '<%= edit_site_path(@site) %>';
+});
+</script>

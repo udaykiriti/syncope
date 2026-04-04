@@ -3,35 +3,10 @@
 <div class="form-page">
   <div class="form-container">
     <div class="form-header">
-      <%= link_to "&larr; Back".html_safe, sites_path, class: "btn-back" %>
+      <%= link_to "← Back", sites_path, class: "btn-back" %>
       <h2 class="form-title">Monitor a Website</h2>
     </div>
 
-    <%= form_with model: @site, class: "site-form" do |f| %>
-      <% if @site.errors.any? %>
-        <div class="errors">
-          <ul>
-            <% @site.errors.full_messages.each do |msg| %>
-              <li><%= msg %></li>
-            <% end %>
-          </ul>
-        </div>
-      <% end %>
-
-      <div class="field">
-        <%= f.label :name, "Display Name" %>
-        <%= f.text_field :name, placeholder: "e.g. My Portfolio", autofocus: true %>
-      </div>
-
-      <div class="field">
-        <%= f.label :url, "URL" %>
-        <%= f.url_field :url, placeholder: "https://example.com" %>
-        <small class="hint">Include http:// or https://</small>
-      </div>
-
-      <div class="actions">
-        <%= f.submit "Create Monitoring Site", class: "btn-submit" %>
-      </div>
-    <% end %>
+    <%= render "form", site: @site, button_label: "Start Monitoring" %>
   </div>
 </div>

@@ -22,9 +22,7 @@ class PingSiteJob < ApplicationJob
     site.checks.reset
 
     # Guard: skip alerts entirely if no recipient is configured.
-    # TODO: (Phase 5 follow-up) support per-site alert recipients stored in the
-    # sites table rather than a single global env var.
-    return unless ENV["ALERT_EMAIL_TO"].present?
+    return unless site.alert_email.present? || ENV["ALERT_EMAIL_TO"].present?
 
     transition = site.status_transition
     if transition && site.needs_alert?(transition)

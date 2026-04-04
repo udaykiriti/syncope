@@ -1,23 +1,124 @@
 <%= content_for :title, "Dashboard — Syncope" %>
 
+<%# Auto-refresh every 30 seconds %>
+<meta http-equiv="refresh" content="30">
+
 <div class="dashboard">
   <header class="dashboard-header">
     <div class="header-content">
-      <span class="dashboard-wordmark">Syncope</span>
-      <%= link_to "Add Site", new_site_path, class: "btn-add" %>
+      <span class="dashboard-wordmark">
+        <span class="wordmark-icon">
+          <svg viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        </span>
+        Syncope
+      </span>
+      <div style="display:flex;align-items:center;gap:0.75rem;">
+        <span class="refresh-indicator">
+          <span class="refresh-dot"></span>
+          auto: 30s
+        </span>
+        <%= button_to ping_all_sites_path, method: :post, class: "btn-ping" do %>
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          Ping All
+        <% end %>
+        <%= link_to new_site_path, class: "btn-add" do %>
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add<span class="kbd">N</span>
+        <% end %>
+      </div>
     </div>
   </header>
 
+  <% up_count = @sites.select(&:latest_check).count { |s| (200..299).include?(s.latest_check.status) } %>
+  <% down_count = @sites.select(&:latest_check).count { |s| !(200..299).include?(s.latest_check.status) } %>
+  <% down_sites = @sites.select(&:latest_check).select { |s| !(200..299).include?(s.latest_check.status) } %>
+
+  <%# Marquee alert banner — only shown when sites are down %>
+  <% if down_sites.any? %>
+    <div class="alert-banner">
+      <div class="alert-banner-inner">
+        <% 3.times do %>
+          <span>⚠ ALERT: <%= down_sites.map(&:name).join(", ") %> — STATUS DOWN — IMMEDIATE ATTENTION REQUIRED ⚠</span>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <%# System status ticker %>
+  <div class="status-bar">
+    <div class="status-bar-item">
+      <div class="status-bar-dot"></div>
+      <span class="status-bar-label">SYS:</span>
+      <span class="status-bar-value"><%= down_count > 0 ? "DEGRADED" : "NOMINAL" %></span>
+    </div>
+    <div class="status-bar-item">
+      <span class="status-bar-label">TARGETS:</span>
+      <span class="status-bar-value"><%= up_count %>/<%= @sites.count %> OK</span>
+    </div>
+    <div class="status-bar-item">
+      <span class="status-bar-label">SCAN:</span>
+      <span class="status-bar-value"><%= Time.current.strftime("%H:%M:%S UTC") %></span>
+    </div>
+    <div class="status-bar-item" style="margin-left:auto;">
+      <span class="status-bar-label">KEYS:</span>
+      <span class="status-bar-value"><span class="kbd">N</span> new <span class="kbd">R</span> refresh</span>
+    </div>
+  </div>
+
   <main class="dashboard-main">
+    <section class="overview-section">
+      <div class="section-header">[ System Overview ]</div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-label">// Monitored</span>
+          <span class="stat-value"><%= @sites.count %></span>
+        </div>
+        <div class="stat-card stat-card--healthy">
+          <span class="stat-label">// Healthy</span>
+          <span class="stat-value"><%= up_count %></span>
+        </div>
+        <div class="stat-card stat-card--alert">
+          <span class="stat-label">// Down</span>
+          <span class="stat-value"><%= down_count %></span>
+        </div>
+      </div>
+    </section>
+
     <% if @sites.any? %>
+      <div class="section-header">[ Targets ]</div>
       <div class="sites-grid">
         <%= render @sites %>
       </div>
     <% else %>
       <div class="empty-state">
-        <p class="dashboard-empty">No sites monitored yet. Add one to get started.</p>
-        <%= link_to "Add Site", new_site_path, class: "btn-add-large" %>
+        <div class="empty-icon">
+          <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <p class="dashboard-empty">> No targets configured.<br>> Press <span class="kbd">N</span> or click below.</p>
+        <%= link_to new_site_path, class: "btn-add-large" do %>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          ./add_site
+        <% end %>
       </div>
     <% end %>
+
+    <div class="visitor-counter">
+      You are visitor #<span>0</span><span>0</span><span>0</span><span><%= rand(1..9) %></span><span><%= rand(0..9) %></span><span><%= rand(0..9) %></span> since 2026
+    </div>
   </main>
 </div>
+
+<%# Keyboard shortcuts %>
+<script>
+document.addEventListener('keydown', function(e) {
+  // Don't trigger if user is typing in an input
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+  if (e.key === 'n' || e.key === 'N') {
+    window.location.href = '<%= new_site_path %>';
+  }
+  if (e.key === 'r' || e.key === 'R') {
+    window.location.reload();
+  }
+});
+</script>

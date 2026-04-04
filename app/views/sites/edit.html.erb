@@ -1,0 +1,12 @@
+<%= content_for :title, "Edit #{@site.name} — Syncope" %>
+
+<div class="form-page">
+  <div class="form-container">
+    <div class="form-header">
+      <%= link_to "← Back to Site", site_path(@site), class: "btn-back" %>
+      <h2 class="form-title">Edit Configuration</h2>
+    </div>
+
+    <%= render "form", site: @site, button_label: "Save Settings" %>
+  </div>
+</div>

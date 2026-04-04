@@ -9,8 +9,8 @@ class Site < ApplicationRecord
                      message: "must begin with http:// or https://"
                    }
 
-  # TODO: add an optional `check_interval_seconds` column so each site can have
-  # its own ping frequency rather than sharing the global 60-second schedule.
+  validates :check_interval_seconds, numericality: { greater_than_or_equal_to: 60, only_integer: true }
+  validates :alert_email, format: { with: URI::MailTo::EMAIL_REGEXP, message: "must be a valid email address" }, allow_blank: true
 
   def status_color
     return "dim" unless latest_check

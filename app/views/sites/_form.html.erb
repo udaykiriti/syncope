@@ -1,0 +1,37 @@
+<%= form_with model: site, class: "site-form" do |f| %>
+  <% if site.errors.any? %>
+    <div class="errors">
+      <ul>
+        <% site.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :name, "Display Name" %>
+    <%= f.text_field :name, placeholder: "e.g. My Portfolio", autofocus: true %>
+  </div>
+
+  <div class="field">
+    <%= f.label :url, "URL" %>
+    <%= f.url_field :url, placeholder: "https://example.com" %>
+    <small class="hint">Include http:// or https://</small>
+  </div>
+
+  <div class="field">
+    <%= f.label :check_interval_seconds, "Check Interval" %>
+    <%= f.select :check_interval_seconds, [["Every 1 minute", 60], ["Every 5 minutes", 300], ["Every 15 minutes", 900], ["Every 60 minutes", 3600]], {}, class: "form-select" %>
+  </div>
+
+  <div class="field">
+    <%= f.label :alert_email, "Custom Alert Email (Optional)" %>
+    <%= f.email_field :alert_email, placeholder: "team@company.com" %>
+    <small class="hint">Overrides the global default alert email.</small>
+  </div>
+
+  <div class="actions">
+    <%= f.submit button_label, class: "btn-submit" %>
+  </div>
+<% end %>
