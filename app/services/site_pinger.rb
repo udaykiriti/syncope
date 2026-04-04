@@ -26,7 +26,10 @@ class SitePinger
         open_timeout: 5,
         read_timeout: 5
       ) do |http|
-        http.request_head(uri.path.empty? ? '/' : uri.path)
+        # Use request_uri to include path AND query string (e.g. /search?q=ruby)
+        # BUG FIX: Net::HTTP requires a leading slash if path is empty, which
+        # request_uri provides for HTTP/HTTPS URIs.
+        http.request_head(uri.request_uri)
       end
 
       # End the timer and calculate the duration in milliseconds.
@@ -59,5 +62,5 @@ if __FILE__ == $0
   puts "Pinging #{target2}..."
   result2 = SitePinger.ping(target2)
   puts "Result: #{result2}"
-  puts "───────────────────────────────"
+  puts "------------------------"
 end
